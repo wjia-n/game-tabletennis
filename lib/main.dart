@@ -1,25 +1,84 @@
 import 'package:flutter/material.dart';
-import 'package:wajiha_game_core/wajiha_game_core.dart';
-import 'game_screen.dart';
+import 'package:flutter/services.dart';
+import 'screens/splash_screen.dart';
+import 'services/audio_service.dart';
+import 'services/settings_service.dart';
+import 'theme/tt_themes.dart';
 
-void main() => runApp(const TableTennisApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  final settings = TTSettings();
+  await settings.load();
+  final audio = TTAudio();
+  audio.configure(
+    musicOn: settings.musicOn,
+    sfxOn: settings.sfxOn,
+    volume: settings.volume,
+  );
+  runApp(TableTennisApp(settings: settings, audio: audio));
+}
 
-class TableTennisApp extends StatelessWidget {
-  const TableTennisApp({super.key});
+class TableTennisApp extends StatefulWidget {
+  final TTSettings settings;
+  final TTAudio audio;
+  const TableTennisApp({super.key, required this.settings, required this.audio});
+
+  @override
+  State<TableTennisApp> createState() => _TableTennisAppState();
+}
+
+class _TableTennisAppState extends State<TableTennisApp>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    widget.audio.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Pause (not stop) on interruption so music resumes exactly where it
+    // left off; game screens additionally freeze their engines.
+    if (state == AppLifecycleState.paused) {
+      widget.audio.onAppPaused();
+    } else if (state == AppLifecycleState.resumed) {
+      widget.audio.onAppResumed();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GameShell(
-      variant: ShellVariant.zenStone,
-      title: 'Table Tennis',
-      tagline: 'Spin and smash in lightning table tennis rallies',
-      emoji: '🏓',
-      slug: 'tabletennis',
-      howToPlay:
-          '• The ball arcs back and forth — TAP just as it reaches your paddle!\n• Perfect timing = rocket return. Sloppy timing = into the net. 😬\n• Swipe UP for topspin (fast) or DOWN for backspin (tricky) before tapping.\n• First to 11, win by 2. Serve swaps every 2 points.\n• Solo? The bot reads spin… mostly. 🤖',
-      playerOptions: const [1, 2],
-      supportsBots: true,
-      gameBuilder: (ctx, players, cb) => TableTennisScreen(players: players, callbacks: cb),
+    return ListenableBuilder(
+      listenable: widget.settings,
+      builder: (_, _) {
+        final theme = TTThemes.byId(widget.settings.themeId,
+            custom: widget.settings.customTheme);
+        return MaterialApp(
+          title: 'Table Tennis',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            useMaterial3: true,
+            scaffoldBackgroundColor: theme.arenaBottom,
+            colorScheme: ColorScheme.dark(
+              primary: theme.accent,
+              surface: theme.arenaTop,
+              onSurface: theme.text,
+            ),
+          ),
+          home: SplashScreen(audio: widget.audio, settings: widget.settings),
+        );
+      },
     );
   }
 }
