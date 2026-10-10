@@ -69,7 +69,7 @@ class TTSettings extends ChangeNotifier {
   int gamesPlayed = 0;
   int bestRally = 0;
   int smashes = 0;
-  bool isPro = false;
+  bool isPro = true; // everything unlocked — no Pro version
 
   /// Custom theme colors (ARGB ints).
   Map<String, int> customColors = Map.of(_defaultCustomColors);
@@ -139,7 +139,7 @@ class TTSettings extends ChangeNotifier {
     gamesPlayed = p.getInt(_kGames) ?? 0;
     bestRally = p.getInt(_kBestRally) ?? 0;
     smashes = p.getInt(_kSmashes) ?? 0;
-    isPro = p.getBool(_kIsPro) ?? false;
+    isPro = true; // everything unlocked
     for (final k in _defaultCustomColors.keys) {
       customColors[k] = p.getInt('$_kCustomPrefix$k') ?? _defaultCustomColors[k]!;
     }
