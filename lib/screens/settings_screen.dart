@@ -4,6 +4,7 @@ import '../services/settings_service.dart';
 import '../theme/tt_themes.dart';
 import '../theme/tt_widgets.dart';
 import 'custom_theme_screen.dart';
+import '../transfer/transfer_ui.dart';
 
 /// Settings: sound/music toggles + volume, custom theme entry, stats reset.
 class SettingsScreen extends StatefulWidget {
@@ -50,6 +51,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
               child: Column(
                 children: [
+              TransferSaveTile(gameSlug: 'tabletennis'),
                   ArenaCard(
                     theme: t,
                     child: Column(
