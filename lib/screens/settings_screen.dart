@@ -122,9 +122,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           contentPadding: EdgeInsets.zero,
                           leading: Icon(Icons.palette, color: t.accent),
                           title: Text(
-                            s.isPro
-                                ? 'Custom theme creator'
-                                : 'Custom theme creator 🔒',
+                            'Custom theme creator',
                             style: Arena.body(16, theme: t),
                           ),
                           subtitle: Text(
@@ -134,8 +132,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           trailing: Icon(Icons.chevron_right,
                               color: t.accent),
-                          onTap: s.isPro
-                              ? () {
+                          onTap: () {
                                   a.click();
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
@@ -143,21 +140,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         audio: a,
                                         settings: s,
                                       ),
-                                    ),
-                                  );
-                                }
-                              : () {
-                                  a.invalid();
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          'The custom theme creator is a PRO feature',
-                                          style: Arena.body(14,
-                                              theme: t)),
-                                      backgroundColor: Colors.black87,
-                                      behavior:
-                                          SnackBarBehavior.floating,
                                     ),
                                   );
                                 },

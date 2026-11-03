@@ -499,14 +499,6 @@ class _ModeCard extends StatelessWidget {
                 settings.setDifficulty(v);
               },
             ),
-            if (!settings.isPro)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  'Hard mode is a PRO feature 🔒',
-                  style: Arena.body(12, theme: theme, color: theme.muted),
-                ),
-              ),
           ] else
             Padding(
               padding: const EdgeInsets.only(top: 10),
